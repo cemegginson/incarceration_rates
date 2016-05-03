@@ -13,7 +13,7 @@ function GenerateGraph(title:string, data_row, iter:number) {
     let height:number = 400 - margins[0] - margins[2];
 
     // Scale functions for x and y values
-    let x = d3.scale.linear().domain([0, 38]).range([0, height]);
+    let x = d3.scale.linear().domain([0, 10]).range([0, height]);
 
     let y_max:any = _.max(data_row);
     if (y_max < 30) {
@@ -88,7 +88,6 @@ for (let i in data) {
     for (let j of years) {
         actual_data.push(+data_row[j]);
     }
-    console.log(data[i])
     GenerateGraph(data[i]["Jurisdiction"], actual_data, current_graph);
     current_graph++;
 }
