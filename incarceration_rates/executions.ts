@@ -42,15 +42,6 @@ function GenerateGraph(title:string, data_row, iter:number) {
     .tickSize(-height)
     .tickValues([1977, 1982, 1987, 1992, 1997, 2002, 2007, 2012]);
 
-    // Add the jurisdiciton
-    graph.append("svg:text")
-        .attr("x", (width / 2))
-        .attr("y", 0 - (margins[1] / 2))
-        .attr("text-anchor", "middle")
-        .style("font-size", "16px")
-        .style("text-decoration", "underline")
-        .text(title);
-
     // Add the x-axis.
     graph.append("svg:g")
           .attr("class", "x axis")
@@ -78,6 +69,15 @@ function GenerateGraph(title:string, data_row, iter:number) {
     // above the tick-lines
     graph.append("svg:path").data(data_row).attr("d", line(data_row));
 
+    // Add the jurisdiciton
+    graph.append("svg:text")
+    .attr("x", (width / 2))
+    .attr("y", 0 - (margins[1] / 2))
+    .attr("text-anchor", "middle")
+    .style("font-size", "16px")
+    .style("text-decoration", "underline")
+    .text(title);
+    console.log(title)
 }
 
 let current_graph:number = 1;
@@ -88,7 +88,8 @@ for (let i in data) {
     for (let j of years) {
         actual_data.push(+data_row[j]);
     }
-    GenerateGraph(data['Jurisdiction'], actual_data, current_graph);
+    console.log(data[i])
+    GenerateGraph(data[i]["Jurisdiction"], actual_data, current_graph);
     current_graph++;
 }
 });
