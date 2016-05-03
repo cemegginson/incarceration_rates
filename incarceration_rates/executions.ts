@@ -6,13 +6,7 @@ import * as _ from 'lodash';
 // We'll make this global since it should be useful.
 let years = _.range(1977, 2015);
 
-function GenerateGraph(data_row, iter:number) {
-    // resort data_row
-    let data_row_temp = [];
-    for (let i = 0; i < data_row.length; i++) {
-        data_row_temp.push([i+1, data_row[i]]);
-    }
-    data_row = data_row_temp;
+function GenerateGraph(title:string, data_row, iter:number) {
     // define dimensions of graph
     let margins:number[] = [80, 80, 80, 80];
     let width:number = 1000 - margins[1] - margins[3];
@@ -20,7 +14,12 @@ function GenerateGraph(data_row, iter:number) {
 
     // Scale functions for x and y values
     let x = d3.scale.linear().domain([0, 38]).range([0, height]);
-    let y = d3.scale.linear().domain([0, 50]).range([height, 0]);
+
+    let y_max:any = _.max(data_row);
+    if (y_max < 30) {
+        y_max = 30;
+    }
+    let y = d3.scale.linear().domain([0, y_max]).range([height, 0]);
 
     // automatically determining max range can work something like this
     // let y = d3.scale.linear().domain([0, d3.max(data)]).range([h, 0]);
@@ -37,8 +36,20 @@ function GenerateGraph(data_row, iter:number) {
         .append("svg:g")
           .attr("transform", "translate(" + margins[3] + "," + margins[0] + ")");
 
-    // create yAxis
-    let xAxis = d3.svg.axis().scale(x).tickSize(-height); //.tickSubdivide(true);
+    // create x axis
+    let xAxis = d3.svg.axis()
+    .scale(x)
+    .tickSize(-height)
+    .tickValues([1977, 1982, 1987, 1992, 1997, 2002, 2007, 2012]);
+
+    // Add the jurisdiciton
+    graph.append("svg:text")
+        .attr("x", (width / 2))
+        .attr("y", 0 - (margins[1] / 2))
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("text-decoration", "underline")
+        .text(title);
 
     // Add the x-axis.
     graph.append("svg:g")
@@ -46,7 +57,7 @@ function GenerateGraph(data_row, iter:number) {
           .attr("transform", "translate(0," + height + ")")
           .call(xAxis);
 
-    // create left yAxis
+    // create left y axis
     let yAxisLeft = d3.svg.axis().scale(y).ticks(4).orient("left");
 
     // Add the y-axis to the left
@@ -55,11 +66,18 @@ function GenerateGraph(data_row, iter:number) {
           .attr("transform", "translate(-25,0)")
           .call(yAxisLeft);
 
+    // resort data_row
+    let data_row_temp = [];
+    for (let i = 0; i < data_row.length; i++) {
+      data_row_temp.push([i+1, data_row[i]]);
+    }
+    data_row = data_row_temp;
+
     // Add the line by appending an svg:path element with the data line
     // we created above do this AFTER the axes above so that the line is
     // above the tick-lines
-    console.log(data_row);
     graph.append("svg:path").data(data_row).attr("d", line(data_row));
+
 }
 
 let current_graph:number = 1;
@@ -70,7 +88,7 @@ for (let i in data) {
     for (let j of years) {
         actual_data.push(+data_row[j]);
     }
-    GenerateGraph(actual_data, current_graph);
+    GenerateGraph(data['Jurisdiction'], actual_data, current_graph);
     current_graph++;
 }
 });
